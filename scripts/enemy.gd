@@ -28,11 +28,13 @@ func _ready():
 	health = max_health
 	player = GameManager.player
 	
-	# Connect detection zones
-	detection_zone.body_entered.connect(_on_player_detected)
-	detection_zone.body_exited.connect(_on_player_lost)
-	attack_zone.body_entered.connect(_on_attack_zone_entered)
-	attack_zone.body_exited.connect(_on_attack_zone_exited)
+	# Connect detection zones (with null checks)
+	if detection_zone:
+		detection_zone.body_entered.connect(_on_player_detected)
+		detection_zone.body_exited.connect(_on_player_lost)
+	if attack_zone:
+		attack_zone.body_entered.connect(_on_attack_zone_entered)
+		attack_zone.body_exited.connect(_on_attack_zone_exited)
 
 func _physics_process(delta):
 	if current_state == State.DEAD:

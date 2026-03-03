@@ -5,6 +5,12 @@
 [sub_resource type="CircleShape2D" id="CircleShape2D_boss"]
 radius = 30.0
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_detection"]
+radius = 400.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_attack"]
+radius = 80.0
+
 [node name="Boss" type="CharacterBody2D" groups=["enemies"]]
 script = ExtResource("1_enemy")
 max_health = 300
@@ -23,12 +29,12 @@ shape = SubResource("CircleShape2D_boss")
 [node name="DetectionZone" type="Area2D" parent="."]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionZone"]
-shape = SubResource("CircleShape2D_boss")
+shape = SubResource("CircleShape2D_detection")
 
 [node name="AttackZone" type="Area2D" parent="."]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="AttackZone"]
-shape = SubResource("CircleShape2D_boss")
+shape = SubResource("CircleShape2D_attack")
 
 [node name="HealthBar" type="ProgressBar" parent="."]
 offset_left = -40.0
