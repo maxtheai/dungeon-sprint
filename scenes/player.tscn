@@ -1,0 +1,31 @@
+[gd_scene load_steps=3 format=3 uid="uid://c8yvxg3ulq3a"]
+
+[ext_resource type="Script" path="res://scripts/player.gd" id="1_abc123"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_player"]
+radius = 12.0
+
+[node name="Player" type="CharacterBody2D" groups=["player"]]
+position = Vector2(320, 240)
+script = ExtResource("1_abc123")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_player")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+# Placeholder - will add AI-generated sprite frames
+
+[node name="AttackHitbox" type="Area2D" parent="."]
+monitoring = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AttackHitbox"]
+shape = SubResource("CircleShape2D_player")
+
+[node name="AttackCooldown" type="Timer" parent="."]
+one_shot = true
+
+[node name="Camera2D" type="Camera2D" parent="."]
+zoom = Vector2(2, 2)
+limit_smoothed = true
+position_smoothing_enabled = true
+position_smoothing_speed = 10.0
