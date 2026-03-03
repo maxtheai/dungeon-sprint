@@ -19,22 +19,32 @@ var attack_cooldown: float = 1.0
 enum State { IDLE, CHASE, ATTACK, DEAD }
 var current_state: State = State.IDLE
 
-# Nodes
-@onready var sprite: AnimatedSprite2D = $AnimatedSprite2D
-@onready var detection_zone: Area2D = $DetectionZone
-@onready var attack_zone: Area2D = $AttackZone
+# Nodes (will be fetched in _ready)
+var sprite: AnimatedSprite2D
+var detection_zone: Area2D
+var attack_zone: Area2D
 
 func _ready():
 	health = max_health
 	player = GameManager.player
 	
+	# Safely get nodes
+	sprite = get_node_or_null("AnimatedSprite2D")
+	detection_zone = get_node_or_null("DetectionZone")
+	attack_zone = get_node_or_null("AttackZone")
+	
 	# Connect detection zones (with null checks)
 	if detection_zone:
 		detection_zone.body_entered.connect(_on_player_detected)
 		detection_zone.body_exited.connect(_on_player_lost)
+	else:
+		push_warning("DetectionZone not found on " + name)
+	
 	if attack_zone:
 		attack_zone.body_entered.connect(_on_attack_zone_entered)
 		attack_zone.body_exited.connect(_on_attack_zone_exited)
+	else:
+		push_warning("AttackZone not found on " + name)
 
 func _physics_process(delta):
 	if current_state == State.DEAD:

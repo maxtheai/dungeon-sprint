@@ -12,10 +12,10 @@ var health: int
 var can_attack: bool = true
 var facing_direction: Vector2 = Vector2.DOWN
 
-# Nodes
-@onready var sprite: AnimatedSprite2D = $AnimatedSprite2D
-@onready var attack_hitbox: Area2D = $AttackHitbox
-@onready var attack_cooldown_timer: Timer = $AttackCooldown
+# Nodes (fetched safely in _ready)
+var sprite: AnimatedSprite2D
+var attack_hitbox: Area2D
+var attack_cooldown_timer: Timer
 
 # Signals
 signal health_changed(new_health, max_health)
@@ -23,8 +23,22 @@ signal player_died
 
 func _ready():
 	health = max_health
-	attack_hitbox.body_entered.connect(_on_attack_hit)
-	attack_cooldown_timer.timeout.connect(_on_attack_cooldown_reset)
+	
+	# Safely get nodes
+	sprite = get_node_or_null("AnimatedSprite2D")
+	attack_hitbox = get_node_or_null("AttackHitbox")
+	attack_cooldown_timer = get_node_or_null("AttackCooldown")
+	
+	# Connect signals if nodes exist
+	if attack_hitbox:
+		attack_hitbox.body_entered.connect(_on_attack_hit)
+	else:
+		push_warning("AttackHitbox not found on Player")
+	
+	if attack_cooldown_timer:
+		attack_cooldown_timer.timeout.connect(_on_attack_cooldown_reset)
+	else:
+		push_warning("AttackCooldown timer not found on Player")
 	
 	# Connect to game manager
 	GameManager.player = self
@@ -58,18 +72,21 @@ func _handle_attack_input():
 
 func _perform_attack():
 	can_attack = false
-	attack_cooldown_timer.start(attack_cooldown)
+	
+	if attack_cooldown_timer:
+		attack_cooldown_timer.start(attack_cooldown)
 	
 	# Animation trigger (placeholder - will use AI sprite)
 	print("Attack!")
 	
 	# Position hitbox based on facing direction
-	attack_hitbox.position = facing_direction * 40
-	attack_hitbox.monitoring = true
-	
-	# Disable hitbox after brief moment
-	await get_tree().create_timer(0.1).timeout
-	attack_hitbox.monitoring = false
+	if attack_hitbox:
+		attack_hitbox.position = facing_direction * 40
+		attack_hitbox.monitoring = true
+		
+		# Disable hitbox after brief moment
+		await get_tree().create_timer(0.1).timeout
+		attack_hitbox.monitoring = false
 
 func _perform_special():
 	# Special attack - area damage
